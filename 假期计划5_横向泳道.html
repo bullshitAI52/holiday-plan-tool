@@ -306,6 +306,13 @@
         </div>
 
         <div class="control-group">
+            <label>行高:</label>
+            <input type="number" id="lineHeightInput" value="12" onchange="render()"
+                style="width:50px; text-align:center;">
+            <span style="font-size:9pt; color:#666">mm</span>
+        </div>
+
+        <div class="control-group">
             <input type="text" id="newRowName" placeholder="学科名"
                 style="width: 60px; padding: 3px; border: 1px solid #ccc;">
             <button class="btn btn-green" onclick="addSubject()">+学科</button>
@@ -388,6 +395,8 @@
         function render() {
             const startVal = document.getElementById('startPicker').value;
             const gridDays = parseInt(document.getElementById('dayInput').value);
+            const lineHt = parseInt(document.getElementById('lineHeightInput').value) || 12;
+
             const startDate = new Date(startVal);
             const endDate = new Date(startDate);
             endDate.setDate(startDate.getDate() + gridDays - 1);
@@ -437,6 +446,7 @@
                 sec.tasks.forEach((taskText, tIdx) => {
                     tasksHtml += `
                         <div class="task-line" 
+                             style="min-height: ${lineHt}mm"
                              contenteditable="true" 
                              oninput="updateTask(${sIdx}, ${tIdx}, this.innerText)"
                              placeholder="在此输入任务...">${taskText}</div>
