@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生假期学习计划表生成器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        p.subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            display: block;
+            text-decoration: none;
+            padding: 25px;
+            border-radius: 15px;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.4;
+            display: block;
+        }
+
+        /* Variants */
+        .card.star {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid #fff;
+            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        }
+
+        .card.winter {
+            background: linear-gradient(135deg, #2980b9, #6dd5fa);
+        }
+
+        .card.summer {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff7675;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>📅 假期计划生成工具箱</h1>
+        <p class="subtitle">为不同需求设计的打印模板，支持在线编辑与导出Excel</p>
+
+        <div class="menu-grid">
+            <!-- The User's Favorite -->
+            <a href="假期计划5_横向泳道.html" class="card star">
+                <span class="badge">最实用 🔥</span>
+                <span class="card-icon">🏊</span>
+                <span class="card-title">横向泳道表 (总览神器)</span>
+                <span class="card-desc">时间横向展开，学科分行排列。视野开阔，符合中文书写习惯。现已增加虚线书写辅助线！</span>
+            </a>
+
+            <a href="假期计划1_副本.html" class="card winter">
+                <span class="card-icon">❄</span>
+                <span class="card-title">每日打卡表 (寒假版)</span>
+                <span class="card-desc">每日执行神器。40天单页列表，精确到每一天的打卡任务。支持自定义学科列。</span>
+            </a>
+
+            <a href="假期计划暑假.html" class="card summer">
+                <span class="card-icon">☀</span>
+                <span class="card-title">暑假分页表 (长假专用)</span>
+                <span class="card-desc">专为60天以上长假设计。智能自动分页，保持排版舒适。清爽夏日风格。</span>
+            </a>
+        </div>
+
+        <div style="margin-top:40px; color:#999; font-size:0.9rem">
+            © 2026 寒暑假作业计划助手 <a href="https://github.com/bullshitAI52/holiday-plan-tool" target="_blank"
+                style="color:#2980b9;text-decoration:none;margin-left:10px"><i class="fab fa-github"></i> GitHub</a>
+        </div>
+    </div>
+</body>
+
+</html>
