@@ -1,132 +1,99 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel 高级比对工具 v1.3</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/all.min.css">
+    <title>学生假期学习计划表生成器</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            display: block;
+            text-decoration: none;
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .card span {
+            font-size: 2rem;
+            margin-right: 15px;
+        }
+
+        .winter {
+            background: linear-gradient(to right, #2980b9, #6dd5fa);
+        }
+
+        .summer {
+            background: linear-gradient(to right, #27ae60, #2ecc71);
+        }
+
+        .general {
+            background: linear-gradient(to right, #7f8c8d, #bdc3c7);
+        }
+    </style>
 </head>
+
 <body>
     <div class="container">
-        <header>
-            <h1><i class="fas fa-file-excel"></i> Excel 高级比对工具 v1.3</h1>
-            <a href="版本说明.txt" target="_blank"> 版本更新说明</a>
-            <p class="subtitle">快速比对两个Excel文件的差异，支持多工作表切换、修改、下载。</p>
-        </header>
-        
-        <div class="file-inputs">
-            <div class="file-input">
-                <h3><i class="fas fa-file-upload"></i> 原始文件 (左侧)</h3>
-                <div class="file-upload">
-                    <input type="file" id="file1" accept=".xlsx, .xls, .csv" />
-                    <label for="file1" class="file-upload-label">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span>点击上传Excel文件</span>
-                    </label>
-                </div>
-                <div class="file-info" id="file1-info">未选择文件</div>
-            </div>
-            
-            <div class="file-input">
-                <h3><i class="fas fa-file-upload"></i> 对比文件 (右侧)</h3>
-                <div class="file-upload">
-                    <input type="file" id="file2" accept=".xlsx, .xls, .csv" />
-                    <label for="file2" class="file-upload-label">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                        <span>点击上传Excel文件</span>
-                    </label>
-                </div>
-                <div class="file-info" id="file2-info">未选择文件</div>
-            </div>
-        </div>
-        
-        <div class="controls">
-            <button id="compare-btn" class="btn-primary" disabled>
-                <i class="fas fa-play"></i> 开始比对
-            </button>
-            <button id="reset-btn" class="btn-secondary">
-                <i class="fas fa-redo"></i> 重置
-            </button>
-            <button id="download-btn" class="btn-primary">
-                <i class="fas fa-download"></i> 下载表格
-            </button>
-            <button id="history-btn" class="btn-secondary">
-                <i class="fas fa-history"></i> 历史记录
-            </button>
-            <button id="sync-btn" class="btn-primary">
-                <i class="fas fa-sync-alt"></i> 保存修改
-            </button>
-        </div>
-        
-        <div class="sheet-selector" id="sheet-selector">
-            <label for="sheet-select"><i class="fas fa-table"></i> 选择工作表: </label>
-            <select id="sheet-select"></select>
-            <label for="compare-mode"><i class="fas fa-exchange-alt"></i> 对比模式: </label>
-            <select id="compare-mode">
-                <option value="row-by-row">逐行对比</option>
-                <option value="cross-row">跨行对比</option>
-            </select>
-        </div>
-    </div>
-        <div class="summary" id="summary">
-            <h3><i class="fas fa-chart-bar"></i> 比对摘要</h3>
-            <div class="stats" id="stats">
-                <div class="stat-card total-cells">
-                    <h4>总单元格数</h4>
-                    <p id="total-cells">0</p>
-                </div>
-                <div class="stat-card diff-cells">
-                    <h4>差异单元格数</h4>
-                    <p id="diff-cells">0</p>
-                </div>
-                <div class="stat-card match-cells">
-                    <h4>匹配单元格数</h4>
-                    <p id="match-cells">0</p>
-                </div>
-                <div class="stat-card match-rate">
-                    <h4>匹配率</h4>
-                    <p id="match-rate">0%</p>
-                </div>
-            </div>
-            <div class="progress-container">
-                <div class="progress-bar" id="progress-bar" style="width: 100%"></div>
-            </div>
-            <!--<div class="annotation-controls">
-                <input type="text" id="note-input" placeholder="输入批注内容...">
-                <button id="add-note-btn" class="btn-primary">
-                    <i class="fas fa-comment"></i> 添加批注
-                </button> 
-            </div>-->
-        </div>
-        
-        <div class="comparison-container" id="comparison-container">
-            <div class="file-display">
-                <div class="file-header">
-                    <i class="fas fa-file-excel"></i>
-                    <span id="file1-header">原始文件</span>
-                </div>
-                <div class="sync-scroll" id="file1-scroll">
-                    <table id="file1-table"></table>
-                </div>
-            </div>
-            <div class="file-display">
-                <div class="file-header">
-                    <i class="fas fa-file-excel"></i>
-                    <span id="file2-header">对比文件</span>
-                </div>
-                <div class="sync-scroll" id="file2-scroll">
-                    <table id="file2-table"></table>
-                </div>
-            </div>
-        </div>
-        
-        <div class="history-container" id="history-container"></div>
-    </div>
+        <h1>📅 假期计划表生成工具</h1>
+        <p style="color:#666; margin-bottom:30px">选择下方的模板进入编辑和打印</p>
 
-    <script src="js/xlsx.full.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/jszip.min.js"></script>
-    <script src="js/FileSaver.js"></script>
+        <div class="menu">
+            <a href="假期计划1_副本.html" class="card winter">
+                <span>❄</span> 寒假计划表 (自定义列/行) <i class="fas fa-chevron-right"></i>
+            </a>
+
+            <a href="假期计划暑假.html" class="card summer">
+                <span>☀</span> 暑假计划表 (自动分页) <i class="fas fa-chevron-right"></i>
+            </a>
+
+            <a href="假期计划1.html" class="card general">
+                <span>📝</span> 通用计划表 (A4双栏) <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </div>
 </body>
+
 </html>
