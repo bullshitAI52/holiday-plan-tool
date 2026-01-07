@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>寒假作业总览表 (横向泳道版)</title>
+    <title>寒假作业总览表 (泳道清单版)</title>
     <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap"
         rel="stylesheet">
@@ -12,7 +12,6 @@
     <style>
         :root {
             --primary-color: #e67e22;
-            /* Carrot Orange for vitality */
             --header-bg: #fdf2e9;
             --header-text: #d35400;
             --border-color: #f5b7b1;
@@ -23,6 +22,7 @@
             margin: 0;
             padding: 0;
             -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
         body {
@@ -66,11 +66,18 @@
             cursor: pointer;
         }
 
+        .btn:hover {
+            background: #d35400;
+        }
+
         .btn-green {
             background: #27ae60;
         }
 
-        /* A4 Page (Portrait) */
+        .btn-green:hover {
+            background: #229954;
+        }
+
         .page {
             width: 210mm;
             height: 297mm;
@@ -115,7 +122,6 @@
             outline: none;
         }
 
-        /* Time Bar (Horizontal) */
         .time-bar {
             display: flex;
             align-items: center;
@@ -161,7 +167,6 @@
             font-size: 14pt;
         }
 
-        /* Subject Rows Container */
         .subject-container {
             flex: 1;
             display: flex;
@@ -176,10 +181,11 @@
             border: 2px solid #eee;
             border-radius: 8px;
             overflow: hidden;
+            background: white;
         }
 
         .subject-header {
-            background: #fdfefe;
+            background: linear-gradient(to right, #fdfbfb, #ebedee);
             border-bottom: 1px solid #eee;
             padding: 5px 10px;
             font-weight: bold;
@@ -187,7 +193,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: linear-gradient(to right, #fdfbfb, #ebedee);
         }
 
         .subject-title {
@@ -201,10 +206,11 @@
             color: var(--primary-color);
         }
 
-        /* Actions for subject */
         .sub-actions {
             opacity: 0;
             transition: opacity 0.2s;
+            display: flex;
+            gap: 8px;
         }
 
         .subject-row:hover .sub-actions {
@@ -214,62 +220,67 @@
         .action-btn {
             cursor: pointer;
             color: #999;
-            margin-left: 5px;
             font-size: 10pt;
             background: none;
             border: none;
         }
 
         .action-btn:hover {
-            color: #e74c3c;
+            color: #333;
             transform: scale(1.1);
         }
 
-        .action-btn.edit {
-            vertical-align: middle;
+        .action-btn.add-line {
+            color: var(--primary-color);
+            font-weight: bold;
         }
 
-        .action-btn.edit:hover {
-            color: var(--primary-color);
+        .action-btn.del-line {
+            color: #e74c3c;
         }
 
         .subject-body {
             flex: 1;
-            position: relative;
-            background: white;
-            min-height: 50px;
-            /* Min height if empty */
+            padding: 5px 15px;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Writing Lines */
-        .writing-guide {
+        /* Distinct Task Lines */
+        .task-line {
             width: 100%;
-            height: 100%;
-            /* 
-               Dotted Line Implementation:
-               1. radial-gradient creates a small dot.
-               2. background-size (10px 12mm) controls repetition:
-                  - 10px wide = dot spacing horizontally
-                  - 12mm high = line height vertically
-               3. background-position (0 11mm) pushes the dot to the bottom of the 12mm cell.
-            */
-            background-image: radial-gradient(circle, #888 1px, transparent 1px);
-            background-size: 8px 12mm;
-            background-position: 0 11mm;
-
-            line-height: 12mm;
-            /* Text sits in the middle of this 12mm block */
+            border-bottom: 1px solid #f0f0f0;
+            /* Solid subtle line instead of dashed */
+            min-height: 10mm;
+            display: flex;
+            align-items: center;
+            /* Align text to bottom? Center is better for typing */
+            padding: 2px 4px;
             font-size: 11pt;
             outline: none;
-            padding: 0 10px;
-            text-align: left;
+            transition: background 0.2s;
+        }
+
+        .task-line:last-child {
+            border-bottom: none;
+        }
+
+        /* No line for last item */
+
+        .task-line:focus {
+            background: #fafafa;
+            border-bottom: 1px dashed var(--primary-color);
+        }
+
+        .task-line:empty::before {
+            content: attr(placeholder);
+            color: #eee;
+            font-size: 10pt;
         }
 
         @media print {
-            .controls {
-                display: none !important;
-            }
 
+            .controls,
             .sub-actions {
                 display: none !important;
             }
@@ -279,10 +290,6 @@
                 margin: 0;
                 width: 210mm;
                 height: 100vh;
-            }
-
-            body {
-                background: white;
             }
         }
     </style>
@@ -301,7 +308,7 @@
         <div class="control-group">
             <input type="text" id="newRowName" placeholder="学科名"
                 style="width: 60px; padding: 3px; border: 1px solid #ccc;">
-            <button class="btn btn-green" onclick="addRow()">+行</button>
+            <button class="btn btn-green" onclick="addSubject()">+学科</button>
         </div>
 
         <button class="btn btn-green" onclick="exportToExcel()"><i class="fas fa-file-excel"></i> Excel</button>
@@ -317,13 +324,8 @@
             </div>
         </header>
 
-        <div id="timeBar" class="time-bar">
-            <!-- Injected -->
-        </div>
-
-        <div id="subjectContainer" class="subject-container">
-            <!-- Rows Injected -->
-        </div>
+        <div id="timeBar" class="time-bar"></div>
+        <div id="subjectContainer" class="subject-container"></div>
 
         <div style="text-align:center; font-size:8pt; color:#ccc; margin-top:5px;">
             请在上方各学科的横格内填写整个假期的核心任务
@@ -331,7 +333,13 @@
     </div>
 
     <script>
-        let subjects = ["语文 (阅读/作文/练字)", "数学 (试卷/预习/思维)", "英语 (单词/绘本/听力)", "科学/综合素质"];
+        // Data Model: Array of objects
+        let sections = [
+            { title: "语文 (阅读/作文/练字)", tasks: ["", "", "", ""] },
+            { title: "数学 (试卷/预习/思维)", tasks: ["", "", "", ""] },
+            { title: "英语 (单词/绘本/听力)", tasks: ["", "", "", ""] },
+            { title: "科学/综合素质", tasks: ["", "", ""] }
+        ];
 
         document.addEventListener('DOMContentLoaded', () => {
             const t = new Date(); t.setDate(t.getDate() + 1);
@@ -339,20 +347,41 @@
             render();
         });
 
-        function addRow() {
+        // --- Subject Operations ---
+        function addSubject() {
             const name = document.getElementById('newRowName').value.trim();
-            subjects.push(name ? name : "新任务");
+            sections.push({ title: name ? name : "新任务", tasks: ["", "", ""] });
             render();
         }
 
-        function removeRow(index) {
-            subjects.splice(index, 1);
+        function removeSubject(idx) {
+            if (confirm("确定删除这个学科吗？")) {
+                sections.splice(idx, 1);
+                render();
+            }
+        }
+
+        function renameSubject(idx) {
+            const newName = prompt("任务名称:", sections[idx].title);
+            if (newName) { sections[idx].title = newName.trim(); render(); }
+        }
+
+        // --- Task Line Operations ---
+        function addTaskLine(subIdx) {
+            sections[subIdx].tasks.push("");
             render();
         }
 
-        function renameRow(index) {
-            const newName = prompt("任务名称:", subjects[index]);
-            if (newName) { subjects[index] = newName.trim(); render(); }
+        function removeTaskLine(subIdx) {
+            if (sections[subIdx].tasks.length > 0) {
+                sections[subIdx].tasks.pop(); // Remove last line
+                render();
+            }
+        }
+
+        // Update data on type
+        function updateTask(subIdx, taskIdx, val) {
+            sections[subIdx].tasks[taskIdx] = val;
         }
 
         function render() {
@@ -362,47 +391,59 @@
             const endDate = new Date(startDate);
             endDate.setDate(startDate.getDate() + gridDays - 1);
 
-            // 1. Render Time Bar
-            const startStr = `${startDate.getMonth() + 1}月${startDate.getDate()}日`;
-            const endStr = `${endDate.getMonth() + 1}月${endDate.getDate()}日`;
-
+            // 1. Time Bar
             document.getElementById('timeBar').innerHTML = `
                 <div class="time-node">
                     <span class="time-label">开始 Start</span>
-                    <span class="time-val">${startStr}</span>
+                    <span class="time-val">${startDate.getMonth() + 1}.${startDate.getDate()}</span>
                 </div>
                 <div class="time-arrow"></div>
-                <div style="font-size:10pt; color:#d35400; font-weight:normal">假期总时长 <b style="font-size:14pt">${gridDays}</b> 天</div>
+                <div style="font-size:10pt; color:#d35400; font-weight:normal">共 <b style="font-size:14pt">${gridDays}</b> 天</div>
                 <div class="time-arrow"></div>
                 <div class="time-node">
                     <span class="time-label">结束 End</span>
-                    <span class="time-val">${endStr}</span>
+                    <span class="time-val">${endDate.getMonth() + 1}.${endDate.getDate()}</span>
                 </div>
             `;
 
-            // 2. Render Subject Rows
+            // 2. Subject Rows
             const container = document.getElementById('subjectContainer');
             container.innerHTML = '';
 
-            subjects.forEach((sub, index) => {
+            sections.forEach((sec, sIdx) => {
                 const row = document.createElement('div');
                 row.className = 'subject-row';
 
-                const html = `
+                // Header with Controls
+                let headerHtml = `
                     <div class="subject-header">
                         <div class="subject-title">
-                            <i class="fas fa-bookmark subject-icon"></i> ${sub}
+                            <i class="fas fa-bookmark subject-icon"></i> ${sec.title}
                         </div>
                         <div class="sub-actions no-print">
-                            <button class="action-btn edit" onclick="renameRow(${index})"><i class="fas fa-edit"></i></button>
-                            <button class="action-btn" onclick="removeRow(${index})"><i class="fas fa-trash"></i></button>
+                             <span style="font-size:9pt;margin-right:5px;color:#aaa">行数:</span>
+                             <button class="action-btn add-line" onclick="addTaskLine(${sIdx})" title="加一行"><i class="fas fa-plus"></i></button>
+                             <button class="action-btn del-line" onclick="removeTaskLine(${sIdx})" title="减一行"><i class="fas fa-minus"></i></button>
+                             <span style="border-left:1px solid #ddd; margin:0 5px"></span>
+                             <button class="action-btn" onclick="renameSubject(${sIdx})" title="重命名"><i class="fas fa-edit"></i></button>
+                             <button class="action-btn" onclick="removeSubject(${sIdx})" title="删除学科"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
-                    <div class="subject-body">
-                        <div class="writing-guide" contenteditable="true"></div>
-                    </div>
                 `;
-                row.innerHTML = html;
+
+                // Body with Lines
+                let tasksHtml = `<div class="subject-body">`;
+                sec.tasks.forEach((taskText, tIdx) => {
+                    tasksHtml += `
+                        <div class="task-line" 
+                             contenteditable="true" 
+                             oninput="updateTask(${sIdx}, ${tIdx}, this.innerText)"
+                             placeholder="在此输入任务...">${taskText}</div>
+                    `;
+                });
+                tasksHtml += `</div>`;
+
+                row.innerHTML = headerHtml + tasksHtml;
                 container.appendChild(row);
             });
         }
@@ -411,36 +452,23 @@
             const wb = XLSX.utils.book_new();
             const ws_data = [];
 
-            // Header Info
-            const startVal = document.getElementById('startPicker').value;
-            const gridDays = parseInt(document.getElementById('dayInput').value);
-            const startDate = new Date(startVal);
-            const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + gridDays - 1);
-
             ws_data.push(["寒假计划总览", "", ""]);
-            ws_data.push(["开始日期", startDate.toLocaleDateString(), ""]);
-            ws_data.push(["结束日期", endDate.toLocaleDateString(), ""]);
-            ws_data.push(["总天数", gridDays, ""]);
-            ws_data.push([]); // spacer
+            ws_data.push(["学科", "任务清单"]);
 
-            ws_data.push(["学科/任务", "具体内容"]);
-
-            // Content
-            const container = document.getElementById('subjectContainer');
-            const rows = container.querySelectorAll('.subject-row');
-
-            rows.forEach(row => {
-                const title = row.querySelector('.subject-title').innerText.trim();
-                const content = row.querySelector('.writing-guide').innerText.trim();
-                ws_data.push([title, content]);
+            sections.forEach(sec => {
+                // Header row for subject
+                ws_data.push([sec.title, ""]);
+                // Task rows
+                sec.tasks.forEach((task, i) => {
+                    ws_data.push(["", (i + 1) + ". " + task]);
+                });
             });
 
             const ws = XLSX.utils.aoa_to_sheet(ws_data);
             ws['!cols'] = [{ wch: 25 }, { wch: 80 }];
 
-            XLSX.utils.book_append_sheet(wb, ws, "横向总览");
-            XLSX.writeFile(wb, "寒假任务总览(横向).xlsx");
+            XLSX.utils.book_append_sheet(wb, ws, "横向清单");
+            XLSX.writeFile(wb, "寒假任务清单.xlsx");
         }
     </script>
 </body>
