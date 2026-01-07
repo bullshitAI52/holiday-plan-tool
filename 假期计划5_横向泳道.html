@@ -245,29 +245,23 @@
         .writing-guide {
             width: 100%;
             height: 100%;
-            /* Dashed Line Logic: Use a repeating gradient for the lines */
-            background-image: repeating-linear-gradient(to bottom,
-                    transparent,
-                    transparent 8mm,
-                    #ccc 8mm,
-                    #ccc 8.1mm);
-            /* To make it dashed, we need a horizontal mask or gradient? 
-               CSS Dashed lines via text-decoration or border are easier, but for full background lines:
-               Let's stick to SOLID light lines which are better for writing, but make them VISIBLE (#bbb).
-               User asked for "dashed" (须线). Let's try to simulate a subtle dotted line using radial gradient 
-               repeating. 
+            /* 
+               Dotted Line Implementation:
+               1. radial-gradient creates a small dot.
+               2. background-size (10px 12mm) controls repetition:
+                  - 10px wide = dot spacing horizontally
+                  - 12mm high = line height vertically
+               3. background-position (0 11mm) pushes the dot to the bottom of the 12mm cell.
             */
-            background-image: radial-gradient(circle, #999 1px, transparent 1px);
-            background-size: 5px 8.1mm;
-            /* 5px wide dots, repeats every 8.1mm high */
-            background-position: 0 8mm;
-            /* Align to bottom of line */
+            background-image: radial-gradient(circle, #888 1px, transparent 1px);
+            background-size: 8px 12mm;
+            background-position: 0 11mm;
 
-            line-height: 8.1mm;
+            line-height: 12mm;
+            /* Text sits in the middle of this 12mm block */
             font-size: 11pt;
             outline: none;
             padding: 0 10px;
-            /* Remove top padding to align with first line */
             text-align: left;
         }
 
