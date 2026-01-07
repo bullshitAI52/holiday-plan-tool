@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>暑假全科计划表 (自动分页版)</title>
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -283,6 +284,8 @@
             <button class="btn" onclick="addColumn()">+学科</button>
         </div>
 
+        <button class="btn btn-green" onclick="exportToExcel()" style="background: #27ae60;"><i
+                class="fas fa-file-excel"></i> 导出Excel</button>
         <button class="btn grey" onclick="window.print()">🖨️ 打印</button>
     </div>
 
@@ -434,6 +437,51 @@
                 </div>
                 <div class="page-footer">第 ${pageIdx} 页</div>
             `;
+        }
+
+        function exportToExcel() {
+            const wb = XLSX.utils.book_new();
+            const ws_data = [];
+
+            // 1. Headers
+            const headers = ["日期", ...columns, "完成"];
+            ws_data.push(headers);
+
+            // 2. Data from ALL pages
+            // Because pages are just DIVs in the DOM, we can query all rows across all tables
+            const allRows = document.querySelectorAll(".page table tbody tr");
+
+            allRows.forEach(tr => {
+                const rowData = [];
+
+                // Date
+                const dateEl = tr.querySelector(".col-date");
+                if (dateEl) {
+                    rowData.push(dateEl.innerText.replace(/\s+/g, ' '));
+                } else {
+                    rowData.push("");
+                }
+
+                // Inputs
+                const inputs = tr.querySelectorAll(".cell-input");
+                inputs.forEach(input => rowData.push(input.innerText));
+
+                // Check
+                rowData.push("");
+
+                ws_data.push(rowData);
+            });
+
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+
+            // Column Widths
+            const wscols = [{ wch: 15 }];
+            columns.forEach(() => wscols.push({ wch: 30 }));
+            wscols.push({ wch: 10 });
+            ws['!cols'] = wscols;
+
+            XLSX.utils.book_append_sheet(wb, ws, "暑假计划");
+            XLSX.writeFile(wb, "暑假学习计划表.xlsx");
         }
     </script>
 </body>
